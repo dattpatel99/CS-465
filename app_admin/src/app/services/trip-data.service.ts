@@ -21,9 +21,25 @@ export class TripDataService {
     .catch(this.handleError);
   }
 
+  public getTrip(tripCode: string): Promise<Trip>{
+    return this.http
+    .get(this.tripUrl + tripCode)
+    .toPromise()
+    .then(response => response.json() as Trip)
+    .catch(this.handleError);
+  }
+
   public getTrips(): Promise<Trip[]>{
     return this.http
     .get(this.tripUrl)
+    .toPromise()
+    .then(response => response.json() as Trip[])
+    .catch(this.handleError);
+  }
+
+  public updateTrip(formData: Trip): Promise<Trip>{
+    return this.http
+    .put(this.tripUrl + formData.code, formData)
     .toPromise()
     .then(response => response.json() as Trip[])
     .catch(this.handleError);
