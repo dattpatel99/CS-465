@@ -45,6 +45,15 @@ export class TripDataService {
     .catch(this.handleError);
   }
 
+  // FIXME: This does not need to return a trip
+  public deleteTrip(tripCode: string): Promise<Trip[]>{
+    return this.http
+    .delete(this.tripUrl + tripCode)
+    .toPromise()
+    .then(response => response.json() as Trip[])
+    .catch(this.handleError);
+  }
+  
   private handleError(error: any): Promise<any>{
     console.log("Some error occured.");
     return Promise.reject(error.message || error);

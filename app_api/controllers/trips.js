@@ -25,7 +25,7 @@ const tripList = async (req, res) => {
         });
 };
 
-// GET :/trips/:tripCode - return a single trip based on passed code
+// Read :/trips/:tripCode - return a single trip based on passed code
 const tripByCode = async (req, res) => {
     Model
         .find({ 'code': req.params.tripCode })
@@ -48,6 +48,7 @@ const tripByCode = async (req, res) => {
         });
 };
 
+// Create method
 const tripsAddTrip = async (req, res) => {
     Model
         .create({
@@ -75,6 +76,31 @@ const tripsAddTrip = async (req, res) => {
         )
 };
 
+// Delete method
+const tripsDeleteTrip = async (req, res) => {
+    console.log(req.body);
+    Model
+        .findOneAndDelete({ 'code': req.params.tripCode })
+        .exec((err, trip) => {
+            if (!trip) {
+                return res
+                    .status(404)
+                    .json({ "message": "Trip not deleted" });
+            }
+            else if (err) {
+                return res
+                    .status(404)
+                    .json(err);
+            }
+            else {
+                return res
+                    .status(200)
+                    .json({"message": "Deleted"})
+            }
+        });
+}
+
+// Update method
 const tripsUpdateTrip = async (req, res) => {
     console.log(req.body);
     Model
@@ -115,6 +141,7 @@ module.exports = {
     tripList,
     tripByCode,
     tripsAddTrip,
-    tripsUpdateTrip
+    tripsUpdateTrip,
+    tripsDeleteTrip,
 };
 
