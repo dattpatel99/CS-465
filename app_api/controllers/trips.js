@@ -1,10 +1,11 @@
 const async = require('hbs/lib/async');
 const mongoose = require('mongoose');
-const Model = mongoose.model('Trip');
+const Trip = mongoose.model('Trip');
+const User = mongoose.model('users');
 
 // Get '/trips' to list all trips
 const tripList = async (req, res) => {
-    Model
+    Trip
         .find({}) // empty filter to get all trips
         .exec((err, trips) => {
             if (!trips) {
@@ -27,7 +28,7 @@ const tripList = async (req, res) => {
 
 // Read :/trips/:tripCode - return a single trip based on passed code
 const tripByCode = async (req, res) => {
-    Model
+    Trip
         .find({ 'code': req.params.tripCode })
         .exec((err, trip) => {
             if (!trip) {
@@ -50,7 +51,8 @@ const tripByCode = async (req, res) => {
 
 // Create method
 const tripsAddTrip = async (req, res) => {
-    Model
+    getUser(req, res, (req, res) => {
+    Trip
         .create({
             code: req.body.code,
             name: req.body.name,
@@ -74,12 +76,14 @@ const tripsAddTrip = async (req, res) => {
                 }
             }
         )
+    }
+    )
 };
 
 // Delete method
 const tripsDeleteTrip = async (req, res) => {
     console.log(req.body);
-    Model
+    Trip
         .findOneAndDelete({ 'code': req.params.tripCode })
         .exec((err, trip) => {
             if (!trip) {
@@ -103,7 +107,8 @@ const tripsDeleteTrip = async (req, res) => {
 // Update method
 const tripsUpdateTrip = async (req, res) => {
     console.log(req.body);
-    Model
+    getUser(req, res, (req, res) => {
+    Trip
         .findOneAndUpdate({ 'code': req.params.tripCode }, {
             code: req.body.code,
             name: req.body.name,
@@ -135,6 +140,34 @@ const tripsUpdateTrip = async (req, res) => {
                 .status(500) // server error
                 .json(err);
         });
+    }
+    )
+}
+
+const getUser = (req, res, callback) => {
+    if (req.payload && req.payload.email){
+        User
+        .findOne({email: req.payload.email})
+        .exec((err, user) => {
+            if(!user){
+                return res
+                .status(404)
+                .json({"message": "User not found"});
+            }
+            else if (err){
+                console.log(err);
+                return res
+                .status(404)
+                .json(err);
+            }
+            callback(req, res, user.name);
+        });
+    }
+    else{
+        return res
+        .status(404)
+        .json({"message": "User not found"});
+    }
 }
 
 module.exports = {
