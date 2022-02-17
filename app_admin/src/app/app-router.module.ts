@@ -13,7 +13,7 @@ const routes: Routes = [
     {path: 'delete-trip', component: DeleteTripComponent},
     {path: 'login', component: LoginComponent},
     {path: 'list-trips', component: TripListingComponent},
-    {path: '', component: TripListingComponent, pathMatch: 'full'}
+    {path: '', component: HomeComponent, pathMatch: 'full'}
 ]
 
 @NgModule({
