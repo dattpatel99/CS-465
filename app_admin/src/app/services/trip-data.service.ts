@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@angular/core";
 import { Http } from "@angular/http";
-
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import { Trip } from "../../../models/trip";
 import { User } from "models/user";
 import { AuthResponse } from "models/authresponse";
@@ -11,7 +11,7 @@ import { BROWSER_STORAGE } from "../storage";
 })
 export class TripDataService {
   constructor(
-    private http: Http,
+    private http: HttpClient,
     @Inject(BROWSER_STORAGE) private storage: Storage
   ) {}
 
@@ -20,9 +20,9 @@ export class TripDataService {
 
   public addTrip(formData: Trip): Promise<Trip> {
     return this.http
-      .post(this.tripUrl, formData)
+      .post(this.tripUrl, formData, {headers: new HttpHeaders().set('Authorization',`Bearer ${this.storage.getItem('travlr-token')}`)})
       .toPromise()
-      .then((response) => response.json() as Trip[])
+      .then((response) => response as Trip[])
       .catch(this.handleError);
   }
 
@@ -30,7 +30,7 @@ export class TripDataService {
     return this.http
       .get(this.tripUrl + tripCode)
       .toPromise()
-      .then((response) => response.json() as Trip)
+      .then((response) => response as Trip)
       .catch(this.handleError);
   }
 
@@ -38,24 +38,23 @@ export class TripDataService {
     return this.http
       .get(this.tripUrl)
       .toPromise()
-      .then((response) => response.json() as Trip[])
+      .then((response) => response as Trip[])
       .catch(this.handleError);
   }
 
   public updateTrip(formData: Trip): Promise<Trip> {
     return this.http
-      .put(this.tripUrl + formData.code, formData)
+      .put(this.tripUrl + formData.code, formData, {headers: new HttpHeaders().set('Authorization',`Bearer ${this.storage.getItem('travlr-token')}`)})
       .toPromise()
-      .then((response) => response.json() as Trip[])
+      .then((response) => response as Trip[])
       .catch(this.handleError);
   }
 
-  // FIXME: This does not need to return a trip
   public deleteTrip(tripCode: string): Promise<Trip[]> {
     return this.http
       .delete(this.tripUrl + tripCode)
       .toPromise()
-      .then((response) => response.json() as Trip[])
+      .then((response) => response as Trip[])
       .catch(this.handleError);
   }
 
@@ -75,7 +74,7 @@ export class TripDataService {
     return this.http
       .post(url, user)
       .toPromise()
-      .then((response) => response.json() as AuthResponse)
+      .then((response) => response as AuthResponse)
       .catch(this.handleError);
   }
 }
